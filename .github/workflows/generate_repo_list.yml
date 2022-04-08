@@ -20,10 +20,14 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
+        ruby-version: 2.7
           bundler-cache: true
       
       # Run crawler and copy generated json into portal project
       - run: |
+          echo GH_TOKEN='${{ secrets.GH_PAT }}' > .env
+          echo TOPIC='inner-source' >> .env
+          echo ORGANIZATION='${{ secrets.GH_ORG }}' >> .env
           ruby crawler.rb
           cp -f repos.json innersource/repos.json
 
