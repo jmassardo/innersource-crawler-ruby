@@ -28,6 +28,7 @@ jobs:
           echo GH_TOKEN='${{ secrets.GH_PAT }}' > .env
           echo TOPIC='inner-source' >> .env
           echo ORGANIZATION='${{ secrets.GH_ORG }}' >> .env
+          ls -al
           ruby crawler.rb
           cp -f repos.json innersource/repos.json
 
