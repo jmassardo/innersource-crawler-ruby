@@ -1,0 +1,46 @@
+name: Generate repo list
+
+on:
+  workflow_dispatch:
+
+jobs:
+  process-issue:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Fetch portal project
+      - name: Checkout Portal project
+        uses: actions/checkout@v3
+        with:
+          repository: jmassardo/project-portal-for-innersource
+          token: ${{ secrets.GH_PAT }} # `GH_PAT` is a secret that contains your PAT
+          path: innersource
+      
+      # Prep Ruby env
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      
+      # Run crawler and copy generated json into portal project
+      - run: |
+          ruby crawler.rb
+          cp -f repos.json innersource/repos.json
+
+      # Create a PR back to the portal project with the new repos 
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Update report
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          delete-branch: true
+          title: 'New innersource repos available'
+          body: |
+            New innersource repos available for review
+            - Updated with *today's* date
+          labels: |
+            report
+            automated pr
+          assignees: jmassardo
