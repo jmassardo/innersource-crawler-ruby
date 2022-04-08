@@ -53,3 +53,4 @@ jobs:
             report
             automated pr
           assignees: jmassardo
+          path: innersource
